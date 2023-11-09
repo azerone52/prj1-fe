@@ -26,23 +26,25 @@ export function BoardList() {
         <Table>
           <Thead>
             <Tr>
-              {/*<Th>id</Th>*/}
+              <Th>id</Th>
               <Th>title</Th>
               <Th>by</Th>
-              {/*<Th>at</Th>*/}
+              <Th>at</Th>
             </Tr>
           </Thead>
           <Tbody>
-            {boardList || <Spinner />}
-            {boardList &&
+            {boardList === null ? (
+              <Spinner />
+            ) : (
               boardList.map((board) => (
                 <Tr>
-                  {/*<Td>{board.id}</Td>*/}
+                  <Td>{board.id}</Td>
                   <Td>{board.title}</Td>
                   <Td>{board.writer}</Td>
-                  {/*<Td>{board.inserted}</Td>*/}
+                  <Td>{board.inserted}</Td>
                 </Tr>
-              ))}
+              ))
+            )}
           </Tbody>
         </Table>
       </Box>
