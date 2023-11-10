@@ -35,7 +35,7 @@ export function BoardEdit() {
     // PUT /api/board/edit
 
     axios
-      .put("/api.board/edit", board)
+      .put("/api/board/edit", board)
       .then(() => console.log("잘됨"))
       .catch(() => console.log("잘 안됨"))
       .finally(() => console.log("끝"));
