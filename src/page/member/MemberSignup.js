@@ -6,8 +6,9 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
+  useToast,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 export function MemberSignup() {
@@ -17,6 +18,15 @@ export function MemberSignup() {
   const [email, setEmail] = useState("");
 
   const [idAvailable, setIdAvailable] = useState(false);
+  const [pwIsNull, setPwIsNull] = useState(true);
+
+  useEffect(() => {
+    if (password != null) {
+      setPwIsNull(false);
+    }
+  }, [password]);
+
+  const toast = useToast();
 
   let submitAvailable = true;
 
@@ -30,6 +40,7 @@ export function MemberSignup() {
     submitAvailable = false;
   }
   function handleSubmit() {
+    // setPwIsNull(false);
     axios
       .post("/api/member/signup", { id, password, email })
       .then(() => console.log("good"))
@@ -46,10 +57,18 @@ export function MemberSignup() {
       .get("/api/member/check?" + searchParams.toString())
       .then(() => {
         setIdAvailable(false);
+        toast({
+          description: "중복된 아이디입니다.",
+          status: "error",
+        });
       })
       .catch((error) => {
         if (error.response.status === 404) {
           setIdAvailable(true);
+          toast({
+            description: "사용 가능한 아이디입니다.",
+            status: "success",
+          });
         }
       });
   }
@@ -71,12 +90,15 @@ export function MemberSignup() {
         </Flex>
         <FormErrorMessage>ID 중복체크를 해주세요</FormErrorMessage>
       </FormControl>
-      <FormControl isInvalid={password.length == 0}>
+      <FormControl isInvalid={pwIsNull}>
         <FormLabel>password</FormLabel>
         <Input
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            // setPwIsNull(false);
+          }}
         />
         <FormErrorMessage>암호를 입력해주세요</FormErrorMessage>
       </FormControl>
