@@ -4,8 +4,16 @@ import {
   FormControl,
   FormLabel,
   Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Spinner,
   Textarea,
+  useDisclosure,
 } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -19,6 +27,8 @@ export function BoardEdit() {
   const { id } = useParams();
 
   const navigate = useNavigate();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     axios
@@ -38,7 +48,7 @@ export function BoardEdit() {
       .put("/api/board/edit", board)
       .then(() => console.log("잘됨"))
       .catch(() => console.log("잘 안됨"))
-      .finally(() => console.log("끝"));
+      .finally(onClose);
   }
 
   return (
@@ -77,7 +87,23 @@ export function BoardEdit() {
           }
         />
       </FormControl>
-      <Button colorScheme="blue" onClick={handleSubmit}>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>게시글 수정</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <p>정말 수정 하시겠습니까?</p>
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={onClose}>닫기</Button>
+            <Button colorScheme="blue" onClick={handleSubmit}>
+              수정하기
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      <Button colorScheme="blue" onClick={onOpen}>
         저장
       </Button>
       {/* navigate(-1): 이전 경로로 이동 */}
