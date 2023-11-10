@@ -24,6 +24,10 @@ export function MemberSignup() {
 
   let submitAvailable = true;
 
+  if (!emailAvailable) {
+    submitAvailable = false;
+  }
+
   if (!idAvailable) {
     submitAvailable = false;
   }
@@ -71,7 +75,7 @@ export function MemberSignup() {
     params.set("email", email);
 
     axios
-      .get("/api/meber/check?" + params)
+      .get("/api/member/check?" + params)
       .then(() => {
         setEmailAvailable(false);
         toast({
