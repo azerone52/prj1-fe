@@ -1,5 +1,5 @@
-import { useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   Box,
@@ -8,7 +8,15 @@ import {
   FormControl,
   FormLabel,
   Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Spinner,
+  useDisclosure,
   useTabPanel,
   useToast,
 } from "@chakra-ui/react";
@@ -22,6 +30,10 @@ export function MemberEdit() {
 
   const toast = useToast();
   const [params] = useSearchParams();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get("/api/member?" + params.toString()).then((response) => {
@@ -84,7 +96,29 @@ export function MemberEdit() {
     // put /api/member/edit
     // {id, password, email}
 
-    axios.put("/api/member/edit", { id: member.id, password, email });
+    axios
+      .put("/api/member/edit", { id: member.id, password, email })
+      .then(() => {
+        toast({
+          description: "화원 정보가 수정되었습니다.",
+          status: "success",
+        });
+        navigate(-1);
+      })
+      .catch((error) => {
+        if (error.response.status === 401 || error.response.status === 403) {
+          toast({
+            description: "수정 권한이 없습니다.",
+            status: "error",
+          });
+        } else {
+          toast({
+            description: "수정 중에 문제가 발생했습니다.",
+            status: "error",
+          });
+        }
+      })
+      .finally(onClose);
   }
 
   return (
@@ -131,10 +165,25 @@ export function MemberEdit() {
       <Button
         isDisabled={!emailChecked || !passwordChecked}
         colorScheme="blue"
-        onClick={handleSubmit}
+        onClick={onOpen}
       >
         수정
       </Button>
+      {/*수정 모달*/}
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>수정 확인</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>수정 하시겠습니까?</ModalBody>
+          <ModalFooter>
+            <Button onClick={onClose}>닫기</Button>
+            <Button onClick={handleSubmit} colorScheme="blue">
+              수정
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 }
