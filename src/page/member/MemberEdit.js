@@ -83,7 +83,7 @@ export function MemberEdit() {
     params.set("nickName", nickName);
 
     axios
-      .get("/api/member/check" + params)
+      .get("/api/member/check?" + params)
       .then(() => {
         setNickNameAvailable(false);
         toast({
