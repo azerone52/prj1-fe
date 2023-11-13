@@ -6,6 +6,7 @@ import {
   Button,
   Flex,
   FormControl,
+  FormHelperText,
   FormLabel,
   Input,
   Modal,
@@ -179,6 +180,9 @@ export function MemberEdit() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        <FormHelperText>
+          작성 하지 않으면 기존 암호를 유지합니다.
+        </FormHelperText>
       </FormControl>
 
       {password.length > 0 && (
