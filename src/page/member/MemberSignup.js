@@ -16,20 +16,24 @@ export function MemberSignup() {
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
+  const [nickName, setNickName] = useState("");
   const [email, setEmail] = useState("");
 
-  const [idAvailable, setIdAvailable] = useState(false);
-  const [emailAvailable, setEmailAvailable] = useState(false);
+  const [idAvailable, setIdAvailable] = useState(true);
+  const [emailAvailable, setEmailAvailable] = useState(true);
+  const [nickNameAvailable, setNickNameAvailable] = useState(true);
 
   const toast = useToast();
   const navigate = useNavigate();
 
   let submitAvailable = true;
 
+  if (!nickNameAvailable) {
+    submitAvailable = false;
+  }
   if (!emailAvailable) {
     submitAvailable = false;
   }
-
   if (!idAvailable) {
     submitAvailable = false;
   }
@@ -116,6 +120,30 @@ export function MemberSignup() {
       });
   }
 
+  function handleNickNameCheck() {
+    const params = new URLSearchParams();
+    params.set("nickName", nickName);
+
+    axios
+      .get("/api/member/check?" + params)
+      .then(() => {
+        setNickNameAvailable(false);
+        toast({
+          description: "이미 사용 중인 닉네임 입니다.",
+          status: "warning",
+        });
+      })
+      .catch((error) => {
+        if (error.response.status === 404) {
+          setNickNameAvailable(true);
+          toast({
+            description: "사용 가능한 닉네임입니다.",
+            status: "success",
+          });
+        }
+      });
+  }
+
   return (
     <Box>
       <h1>회원 가입</h1>
@@ -133,14 +161,29 @@ export function MemberSignup() {
         </Flex>
         <FormErrorMessage>ID 중복체크를 해주세요</FormErrorMessage>
       </FormControl>
-      <FormControl isInvalid={password.length == 0}>
+      <FormControl>
+        <FormLabel>nick name</FormLabel>
+        <Flex>
+          <Input
+            value={nickName}
+            onChange={(e) => {
+              setNickNameAvailable(false);
+              setNickName(e.target.value);
+            }}
+          />
+          <Button onClick={handleNickNameCheck}>중복확인</Button>
+        </Flex>
+        <FormErrorMessage>닉네임 중복 체크를 해주세요</FormErrorMessage>
+      </FormControl>
+      {/*<FormControl isInvalid={password.length == 0}>*/}
+      <FormControl>
         <FormLabel>password</FormLabel>
         <Input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <FormErrorMessage>암호를 입력해주세요</FormErrorMessage>
+        {/*<FormErrorMessage>암호를 입력해주세요</FormErrorMessage>*/}
       </FormControl>
       <FormControl isInvalid={password != passwordCheck}>
         <FormLabel>password 확인</FormLabel>

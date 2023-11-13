@@ -17,16 +17,17 @@ import {
   ModalOverlay,
   Spinner,
   useDisclosure,
-  useTabPanel,
   useToast,
 } from "@chakra-ui/react";
 
 export function MemberEdit() {
   const [member, setMember] = useState(null);
+  const [nickName, setNickName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
   const [emailAvailable, setEmailAvailable] = useState(false);
+  const [nickNameAvailable, setNickNameAvailable] = useState(false);
 
   const toast = useToast();
   const [params] = useSearchParams();
@@ -39,19 +40,27 @@ export function MemberEdit() {
     axios.get("/api/member?" + params.toString()).then((response) => {
       setMember(response.data);
       setEmail(response.data.email);
+      setNickName(response.data.nickName);
     });
   }, []);
 
+  //member.id로 바꿔보기->ㄱㅊ
   const id = params.get("id");
+
+  //기존 닉네임과 같은지
+  let sameOriginNickName = false;
 
   // 기존 이메일과 같은지?
   let sameOriginEmail = false;
 
   if (member !== null) {
     sameOriginEmail = member.email === email;
+    sameOriginNickName = member.nickName === nickName;
   }
 
   let emailChecked = sameOriginEmail || emailAvailable;
+
+  let nickNameChecked = sameOriginNickName || nickNameAvailable;
 
   // 암호가 없으면 기존 암호
   // 암호를 작성하면 새 암호, 암호 확인 체크
@@ -69,6 +78,29 @@ export function MemberEdit() {
     return <Spinner />;
   }
 
+  function handleNickNameCheck() {
+    const params = new URLSearchParams();
+    params.set("nickName", nickName);
+
+    axios
+      .get("/api/member/check" + params)
+      .then(() => {
+        setNickNameAvailable(false);
+        toast({
+          description: "이미 사용 중인 닉네임입니다.",
+          status: "warning",
+        });
+      })
+      .catch((error) => {
+        if (error.response.status === 404) {
+          setNickNameAvailable(true);
+          toast({
+            description: "사용 가능한 닉네임입니다.",
+            status: "success",
+          });
+        }
+      });
+  }
   function handleEmailCheck() {
     const params = new URLSearchParams();
     params.set("email", email);
@@ -92,12 +124,13 @@ export function MemberEdit() {
         }
       });
   }
+
   function handleSubmit() {
     // put /api/member/edit
     // {id, password, email}
 
     axios
-      .put("/api/member/edit", { id: member.id, password, email })
+      .put("/api/member/edit", { id: member.id, password, email, nickName })
       .then(() => {
         toast({
           description: "화원 정보가 수정되었습니다.",
@@ -124,6 +157,21 @@ export function MemberEdit() {
   return (
     <Box>
       <h1>{id}님 정보 수정</h1>
+      <FormControl>
+        <FormLabel>nick name</FormLabel>
+        <Flex>
+          <Input
+            value={nickName}
+            onChange={(e) => {
+              setEmailAvailable(false);
+              setNickName(e.target.value);
+            }}
+          />
+          <Button isDisabled={nickNameChecked} onClick={handleNickNameCheck}>
+            중복확인
+          </Button>
+        </Flex>
+      </FormControl>
       <FormControl>
         <FormLabel>password</FormLabel>
         <Input
@@ -163,7 +211,7 @@ export function MemberEdit() {
         </Flex>
       </FormControl>
       <Button
-        isDisabled={!emailChecked || !passwordChecked}
+        isDisabled={!emailChecked || !passwordChecked || !nickNameChecked}
         colorScheme="blue"
         onClick={onOpen}
       >
