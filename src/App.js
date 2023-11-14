@@ -49,8 +49,14 @@ function App(props) {
   function isAuthenticated() {
     return login !== ""; // 빈 스트링이 아니면 로그인한 상태
   }
+
+  function hasAccess(userId) {
+    return login.id === userId;
+  }
   return (
-    <LoginContext.Provider value={{ login, fetchLogin, isAuthenticated }}>
+    <LoginContext.Provider
+      value={{ login, fetchLogin, isAuthenticated, hasAccess }}
+    >
       <RouterProvider router={routes} />
     </LoginContext.Provider>
   );
