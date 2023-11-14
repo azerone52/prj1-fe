@@ -2,7 +2,7 @@ import { Button, Flex, useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useContext } from "react";
-import { LoginContext } from "../App";
+import { LoginContext } from "./LoginProvider";
 
 export function NavBar() {
   const { fetchLogin, login, isAuthenticated, isAdmin } =

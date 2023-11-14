@@ -19,7 +19,7 @@ import {
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { LoginContext } from "../../App";
+import { LoginContext } from "../../component/LoginProvider";
 
 export function BoardView() {
   const { id } = useParams();

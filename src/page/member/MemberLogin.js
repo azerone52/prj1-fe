@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react";
 import { useContext, useState } from "react";
 import axios from "axios";
-import { LoginContext } from "../../App";
+import { LoginContext } from "../../component/LoginProvider";
 import { useNavigate } from "react-router-dom";
 
 export function MemberLogin() {
