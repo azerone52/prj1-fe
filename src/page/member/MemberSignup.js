@@ -43,6 +43,7 @@ export function MemberSignup() {
   if (password.length === 0) {
     submitAvailable = false;
   }
+  //TODO:가입 버튼을 누르면=>해당 없는 것들 전부 false로 만들어서=>빨간선이 오르게 하기
   function handleSubmit() {
     axios
       .post("/api/member/signup", { id, password, email })
