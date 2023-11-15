@@ -31,17 +31,7 @@ function CommentForm({ boardId, isSubmitting, onSubmit }) {
   );
 }
 
-function CommentList({ boardId }) {
-  const [commentList, setCommentList] = useState([]);
-
-  useEffect(() => {
-    const params = new URLSearchParams();
-    params.set("id", boardId);
-    axios
-      .get("/api/comment/list?" + params) //더하기 연산자 덕분에 toString 없어도 String으로 들어가긴 함
-      .then((response) => setCommentList(response.data));
-  }, []);
-
+function CommentList({ commentList }) {
   return (
     <Card>
       <CardHeader>
@@ -49,8 +39,7 @@ function CommentList({ boardId }) {
       </CardHeader>
       <CardBody>
         <Stack divider={<StackDivider />} spacing={"4"}>
-          {/*엔터 출력->sx={{whiteSpace:"pre-wrap"}}/}
-          {/*TODO: 댓글 작성 후 re render*/}
+          {/*엔터 출력->sx={{whiteSpace:"pre-wrap"}}*/}
           {commentList.map((comment) => (
             <Box>
               <Flex justifyContent={"space-between"}>
@@ -71,6 +60,18 @@ function CommentList({ boardId }) {
 export function CommentContainer({ boardId }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [commentList, setCommentList] = useState([]);
+
+  useEffect(() => {
+    if (!isSubmitting) {
+      const params = new URLSearchParams();
+      params.set("id", boardId);
+      axios
+        .get("/api/comment/list?" + params) //더하기 연산자 덕분에 toString 없어도 String으로 들어가긴 함
+        .then((response) => setCommentList(response.data));
+    }
+  }, [isSubmitting]);
+
   function handleSubmit(comment) {
     setIsSubmitting(true);
 
@@ -78,6 +79,7 @@ export function CommentContainer({ boardId }) {
       .post("/api/comment/add", comment)
       .finally(() => setIsSubmitting(false));
   }
+
   return (
     <Box>
       <CommentForm
@@ -85,7 +87,7 @@ export function CommentContainer({ boardId }) {
         isSubmitting={isSubmitting}
         onSubmit={handleSubmit}
       />
-      <CommentList boardId={boardId} />
+      <CommentList boardId={boardId} commentList={commentList} />
     </Box>
   );
 }
