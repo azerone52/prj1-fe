@@ -63,6 +63,7 @@ export function CommentContainer({ boardId }) {
   const [commentList, setCommentList] = useState([]);
 
   useEffect(() => {
+    // submit 중이면 re render 하지 않도록
     if (!isSubmitting) {
       const params = new URLSearchParams();
       params.set("id", boardId);
@@ -74,7 +75,7 @@ export function CommentContainer({ boardId }) {
 
   function handleSubmit(comment) {
     setIsSubmitting(true);
-
+    // 여기의 comment는 객체 {boardId, comment}
     axios
       .post("/api/comment/add", comment)
       .finally(() => setIsSubmitting(false));
