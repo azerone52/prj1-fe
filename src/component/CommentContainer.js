@@ -5,6 +5,7 @@ import {
   CardBody,
   CardHeader,
   Flex,
+  FormControl,
   Heading,
   Modal,
   ModalBody,
@@ -42,8 +43,18 @@ function CommentForm({ boardId, isSubmitting, onSubmit }) {
   );
 }
 
-function CommentList({ commentList, onDeleteModalOpen, isSubmitting }) {
+function CommentList({
+  commentList,
+  onDeleteModalOpen,
+  isSubmitting,
+  isFixing,
+  setIsFixing,
+  fixedComment,
+  setFixedComment,
+  handleFix,
+}) {
   const { hasAccess } = useContext(LoginContext);
+
   return (
     <Card>
       <CardHeader>
@@ -59,19 +70,58 @@ function CommentList({ commentList, onDeleteModalOpen, isSubmitting }) {
                 <Text fontSize={"xs"}>{comment.inserted}</Text>
               </Flex>
               <Flex justifyContent={"space-between"} alignItems={"center"}>
-                <Text sx={{ whiteSpace: "pre-wrap" }} pt={"2"} fontSize={"sm"}>
-                  {comment.comment}
-                </Text>
-                {hasAccess(comment.memberId) && (
-                  <Button
-                    isDisabled={isSubmitting}
-                    onClick={() => onDeleteModalOpen(comment.id)}
-                    size={"xs"}
-                    colorScheme="red"
+                {isFixing || (
+                  <Text
+                    sx={{ whiteSpace: "pre-wrap" }}
+                    pt={"2"}
+                    fontSize={"sm"}
                   >
-                    <DeleteIcon />
-                  </Button>
+                    {comment.comment}
+                  </Text>
                 )}
+                {isFixing && (
+                  <>
+                    <FormControl>
+                      <Textarea
+                        value={fixedComment}
+                        onChange={(e) => setFixedComment(e.target.value)}
+                      />
+                    </FormControl>
+                    <Button
+                      onClick={() => handleFix(comment.id)}
+                      colorScheme="blue"
+                      size={"xs"}
+                    >
+                      수정하기
+                    </Button>
+                    <Button onClick={() => setIsFixing(false)} size={"xs"}>
+                      취소
+                    </Button>
+                  </>
+                )}
+                <Box>
+                  {hasAccess(comment.memberId) && !isFixing && (
+                    <Button
+                      size={"xs"}
+                      onClick={() => {
+                        setIsFixing(true);
+                        setFixedComment(comment.comment);
+                      }}
+                    >
+                      수정
+                    </Button>
+                  )}
+                  {hasAccess(comment.memberId) && !isFixing && (
+                    <Button
+                      isDisabled={isSubmitting}
+                      onClick={() => onDeleteModalOpen(comment.id)}
+                      size={"xs"}
+                      colorScheme="red"
+                    >
+                      <DeleteIcon />
+                    </Button>
+                  )}
+                </Box>
               </Flex>
             </Box>
           ))}
@@ -95,6 +145,31 @@ export function CommentContainer({ boardId }) {
   const { isAuthenticated } = useContext(LoginContext);
 
   const toast = useToast();
+
+  const [isFixing, setIsFixing] = useState(false);
+  const [fixedComment, setFixedComment] = useState("");
+
+  function handleFix(id) {
+    setIsSubmitting(true);
+    axios
+      .put("/api/comment/" + id, { fixedComment })
+      .then(() => {
+        toast({
+          description: "수정되었습니다.",
+          status: "success",
+        });
+      })
+      .catch(() => {
+        toast({
+          description: "수정되지 못했습니다.",
+          status: "error",
+        });
+      })
+      .finally(() => {
+        setIsFixing(false);
+        setIsSubmitting(false);
+      });
+  }
 
   useEffect(() => {
     // submit 중이면 re render 하지 않도록
@@ -179,6 +254,11 @@ export function CommentContainer({ boardId }) {
         isSubmitting={isSubmitting}
         commentList={commentList}
         onDeleteModalOpen={handleDeleteModalOpen}
+        isFixing={isFixing}
+        setIsFixing={setIsFixing}
+        fixedComment={fixedComment}
+        setFixedComment={setFixedComment}
+        handleFix={handleFix}
       />
 
       {/*삭제 모달*/}
