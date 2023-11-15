@@ -20,7 +20,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { LoginContext } from "./LoginProvider";
 
@@ -82,7 +82,11 @@ function CommentList({ commentList, onDeleteModalOpen, isSubmitting }) {
 
 export function CommentContainer({ boardId }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [id, setId] = useState(0);
+  // const [id, setId] = useState(0);
+  // useRef: 컴포넌트에서 임시로 값을 저장하는 용도로 사용 렌더링을 유도하지 않음
+  // 쓰면 안될 때: 렌더링 하는 중에 사용하지 않기(렌더링과 관련 없으므로 의도하지 않은 결과가 나올 수 있음
+  // 쓰면 좋을 때: 함수 안에서 변경 시키거나 읽기
+  const commentIdRef = useRef(0);
   const [commentList, setCommentList] = useState([]);
 
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -113,7 +117,7 @@ export function CommentContainer({ boardId }) {
     // TODO: 모달, then, catch, finally
 
     setIsSubmitting(true);
-    axios.delete("/api/comment/" + id).finally(() => {
+    axios.delete("/api/comment/" + commentIdRef.current).finally(() => {
       setIsSubmitting(false);
       onClose();
     });
@@ -121,7 +125,7 @@ export function CommentContainer({ boardId }) {
 
   function handleDeleteModalOpen(id) {
     //id를 어딘가 저장
-    setId(id);
+    commentIdRef.current = id;
     //모달 열기
     onOpen();
   }
