@@ -6,10 +6,19 @@ import {
   CardHeader,
   Flex,
   Heading,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Stack,
   StackDivider,
   Text,
   Textarea,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -32,6 +41,27 @@ function CommentForm({ boardId, isSubmitting, onSubmit }) {
 }
 
 function CommentList({ commentList }) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
+
+  function handleDelete(id) {
+    axios
+      .delete("/api/comment/delete?id=" + id)
+      .then(() => {
+        toast({
+          description: "삭제되었습니다.",
+          status: "info",
+        });
+      })
+      .catch(() => {
+        toast({
+          description: "삭제되지 않았습니다.",
+          status: "warning",
+        });
+      })
+      .finally(onClose);
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -45,7 +75,27 @@ function CommentList({ commentList }) {
               <Flex justifyContent={"space-between"}>
                 <Heading size="xs">{comment.memberId}</Heading>
                 <Text fontSize={"xs"}>{comment.inserted}</Text>
+                <Button onClick={onOpen} size={"sm"}>
+                  x
+                </Button>
               </Flex>
+              <Modal isOpen={isOpen} onClose={onClose}>
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalHeader>댓글을 삭제 하시겠습니까?</ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody>{comment.comment}</ModalBody>
+                  <ModalFooter>
+                    <Button onClick={onClose}>취소</Button>
+                    <Button
+                      colorScheme="red"
+                      onClick={() => handleDelete(comment.id)}
+                    >
+                      삭제
+                    </Button>
+                  </ModalFooter>
+                </ModalContent>
+              </Modal>
               <Text sx={{ whiteSpace: "pre-wrap" }} pt={"2"} fontSize={"sm"}>
                 {comment.comment}
               </Text>
