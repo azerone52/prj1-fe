@@ -41,7 +41,7 @@ function CommentList({ commentList }) {
         <Stack divider={<StackDivider />} spacing={"4"}>
           {/*엔터 출력->sx={{whiteSpace:"pre-wrap"}}*/}
           {commentList.map((comment) => (
-            <Box>
+            <Box key={comment.id}>
               <Flex justifyContent={"space-between"}>
                 <Heading size="xs">{comment.memberId}</Heading>
                 <Text fontSize={"xs"}>{comment.inserted}</Text>
