@@ -155,7 +155,7 @@ function CommentList({
   return (
     <Card>
       <CardHeader>
-        <Heading size="md">댓글 목록</Heading>
+        <Heading size="md">댓글 목록 ({commentList.length})</Heading>
       </CardHeader>
       <CardBody>
         <Stack divider={<StackDivider />} spacing={"4"}>
