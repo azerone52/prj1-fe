@@ -22,7 +22,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { DeleteIcon } from "@chakra-ui/icons";
+import { DeleteIcon, EditIcon, NotAllowedIcon } from "@chakra-ui/icons";
 import { LoginContext } from "./LoginProvider";
 
 function CommentForm({ boardId, isSubmitting, onSubmit }) {
@@ -42,7 +42,64 @@ function CommentForm({ boardId, isSubmitting, onSubmit }) {
   );
 }
 
-function CommentList({ commentList, onDeleteModalOpen, isSubmitting }) {
+function CommentItem({ comment, onDeleteModalOpen }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [commentEdited, setCommentEdited] = useState(comment.comment);
+  const { hasAccess } = useContext(LoginContext);
+
+  return (
+    <Box>
+      <Flex justifyContent={"space-between"}>
+        <Heading size="xs">{comment.memberId}</Heading>
+        <Text fontSize={"xs"}>{comment.inserted}</Text>
+      </Flex>
+      <Flex justifyContent={"space-between"} alignItems={"center"}>
+        <Box flex={1}>
+          <Text sx={{ whiteSpace: "pre-wrap" }} pt={"2"} fontSize={"sm"}>
+            {comment.comment}
+          </Text>
+          {isEditing && (
+            <Textarea
+              value={commentEdited}
+              onChange={(e) => setCommentEdited(e.target.value)}
+            />
+          )}
+        </Box>
+        {hasAccess(comment.memberId) && (
+          <Box>
+            {isEditing || (
+              <Button
+                size={"xs"}
+                colorScheme="purple"
+                onClick={() => setIsEditing(true)}
+              >
+                <EditIcon />
+              </Button>
+            )}
+            {isEditing && (
+              <Button
+                size={"xs"}
+                colorScheme="gray"
+                onClick={() => setIsEditing(false)}
+              >
+                <NotAllowedIcon />
+              </Button>
+            )}
+            <Button
+              onClick={() => onDeleteModalOpen(comment.id)}
+              size={"xs"}
+              colorScheme="red"
+            >
+              <DeleteIcon />
+            </Button>
+          </Box>
+        )}
+      </Flex>
+    </Box>
+  );
+}
+
+function CommentList({ commentList, onDeleteModalOpen }) {
   const { hasAccess } = useContext(LoginContext);
   return (
     <Card>
@@ -53,27 +110,11 @@ function CommentList({ commentList, onDeleteModalOpen, isSubmitting }) {
         <Stack divider={<StackDivider />} spacing={"4"}>
           {/*엔터 출력->sx={{whiteSpace:"pre-wrap"}}*/}
           {commentList.map((comment) => (
-            <Box key={comment.id}>
-              <Flex justifyContent={"space-between"}>
-                <Heading size="xs">{comment.memberId}</Heading>
-                <Text fontSize={"xs"}>{comment.inserted}</Text>
-              </Flex>
-              <Flex justifyContent={"space-between"} alignItems={"center"}>
-                <Text sx={{ whiteSpace: "pre-wrap" }} pt={"2"} fontSize={"sm"}>
-                  {comment.comment}
-                </Text>
-                {hasAccess(comment.memberId) && (
-                  <Button
-                    isDisabled={isSubmitting}
-                    onClick={() => onDeleteModalOpen(comment.id)}
-                    size={"xs"}
-                    colorScheme="red"
-                  >
-                    <DeleteIcon />
-                  </Button>
-                )}
-              </Flex>
-            </Box>
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              onDeleteModalOpen={onDeleteModalOpen}
+            />
           ))}
         </Stack>
       </CardBody>
