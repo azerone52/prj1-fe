@@ -1,7 +1,7 @@
 import { Button, Flex, useToast } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { LoginContext } from "./LoginProvider";
 
 export function NavBar() {
@@ -12,22 +12,26 @@ export function NavBar() {
 
   const urlParams = new URLSearchParams();
 
+  // 현재 위치가 바뀌는 경우 side effec를 시행하기 적절함
+  const location = useLocation();
+
+  useEffect(() => {
+    fetchLogin();
+  }, [location]);
+
   if (login !== "") {
     urlParams.set("id", login.id);
   }
 
   function handleLogout() {
     // TODO: 로그아웃 후 할 일 추가
-    axios
-      .post("/api/member/logout")
-      .then(() => {
-        toast({
-          description: "로그아웃 되었습니다.",
-          status: "info",
-        });
-        navigate("/");
-      })
-      .finally(() => fetchLogin());
+    axios.post("/api/member/logout").then(() => {
+      toast({
+        description: "로그아웃 되었습니다.",
+        status: "info",
+      });
+      navigate("/");
+    });
   }
 
   return (
