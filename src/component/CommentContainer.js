@@ -47,6 +47,14 @@ function CommentItem({ comment, onDeleteModalOpen }) {
   const [commentEdited, setCommentEdited] = useState(comment.comment);
   const { hasAccess } = useContext(LoginContext);
 
+  function handleSubmit() {
+    axios
+      .put("/api/comment/edit", { id: comment.id, comment: commentEdited })
+      .then(() => console.log("good"))
+      .catch(() => console.log("bad"))
+      .finally(() => console.log("done"));
+  }
+
   return (
     <Box>
       <Flex justifyContent={"space-between"}>
@@ -59,10 +67,15 @@ function CommentItem({ comment, onDeleteModalOpen }) {
             {comment.comment}
           </Text>
           {isEditing && (
-            <Textarea
-              value={commentEdited}
-              onChange={(e) => setCommentEdited(e.target.value)}
-            />
+            <Box>
+              <Textarea
+                value={commentEdited}
+                onChange={(e) => setCommentEdited(e.target.value)}
+              />
+              <Button colorScheme="blue" onClick={handleSubmit}>
+                저장
+              </Button>
+            </Box>
           )}
         </Box>
         {hasAccess(comment.memberId) && (
