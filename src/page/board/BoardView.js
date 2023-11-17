@@ -98,7 +98,7 @@ export function BoardView() {
     axios
       .post("/api/like", { boardId: board.id })
       .then((response) => setLike(response.data))
-      .catch()
+      .catch(() => console.log("bad"))
       .finally();
   }
 
