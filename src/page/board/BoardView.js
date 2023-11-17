@@ -25,11 +25,26 @@ import { LoginContext } from "../../component/LoginProvider";
 import { CommentContainer } from "../../component/CommentContainer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
+import * as PropTypes from "prop-types";
+
+function LikeContainer({ like, onClick }) {
+  if (like === null) {
+    return <Spinner />;
+  }
+  return (
+    <Button variant={"ghost"} size={"xl"} onClick={onClick}>
+      <FontAwesomeIcon icon={faHeart} size="xl" />
+    </Button>
+  );
+}
 
 export function BoardView() {
-  const { id } = useParams();
   const [board, setBoard] = useState(null);
+  const [like, setLike] = useState(null);
+
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const { id } = useParams();
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -40,6 +55,12 @@ export function BoardView() {
     axios
       .get("/api/board/id/" + id)
       .then((response) => setBoard(response.data));
+  }, []);
+
+  useEffect(() => {
+    axios
+      .get("/api/like/board/" + id)
+      .then((response) => setLike(response.data));
   }, []);
 
   if (board === null) {
@@ -66,16 +87,18 @@ export function BoardView() {
   }
 
   function handleLike() {
-    axios.post("/api/like", { boardId: board.id }).then().catch().finally();
+    axios
+      .post("/api/like", { boardId: board.id })
+      .then((response) => setLike(response.data))
+      .catch()
+      .finally();
   }
 
   return (
     <Box>
       <Flex justifyContent={"space-between"}>
         <Heading size={"xl"}>{board.id}번 글 보기</Heading>
-        <Button variant={"ghost"} size={"xl"} onClick={handleLike}>
-          <FontAwesomeIcon icon={faHeart} size="xl" />
-        </Button>
+        <LikeContainer like={like} onClick={handleLike} />
       </Flex>
       <FormControl>
         <FormLabel>제목</FormLabel>
