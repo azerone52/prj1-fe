@@ -68,6 +68,7 @@ export function BoardWrite() {
           <Input
             type="file"
             accept="image/*"
+            multiple
             onChange={(e) => setFiles(e.target.files)}
           />
           <FormHelperText>
