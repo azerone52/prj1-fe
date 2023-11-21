@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 export function BoardWrite() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const toast = useToast();
@@ -23,7 +23,7 @@ export function BoardWrite() {
   function handleSubmit() {
     setIsSubmitting(true);
     axios
-      .postForm("/api/board/add", { title, content, file })
+      .postForm("/api/board/add", { title, content, files })
       .then(() => {
         toast({
           description: "새 글이 저장되었습니다.",
@@ -67,7 +67,7 @@ export function BoardWrite() {
           <Input
             type="file"
             accept="image/*"
-            onChange={(e) => setFile(e.target.files[0])}
+            onChange={(e) => setFiles(e.target.files)}
           />
         </FormControl>
         <Button
