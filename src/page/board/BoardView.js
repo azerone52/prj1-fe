@@ -118,9 +118,9 @@ export function BoardView() {
         <Textarea value={board.content} readOnly />
       </FormControl>
       {/*이미지 출력*/}
-      {board.fileNames.map((name) => (
-        <Box my={"5px"} border={"3px solid black"}>
-          <Image widrh={"100%"} src={name} />
+      {board.files.map((file) => (
+        <Box key={file.id} my={"5px"} border={"3px solid black"}>
+          <Image widrh={"100%"} src={file.url} alt={file.name} />
         </Box>
       ))}
       <FormControl>
