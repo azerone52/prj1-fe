@@ -96,7 +96,7 @@ function SearchComponent() {
 
   return (
     <Flex>
-      <Select onChange={(e) => setCategory(e.target.value)}>
+      <Select defaultValue="all" onChange={(e) => setCategory(e.target.value)}>
         <option selected value="all">
           전체
         </option>

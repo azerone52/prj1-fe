@@ -12,7 +12,6 @@ function LoginProvider({ children }) {
   function fetchLogin() {
     axios.get("/api/member/login").then((response) => setLogin(response.data));
   }
-  console.log(login);
   function isAuthenticated() {
     return login !== ""; // 빈 스트링이 아니면 로그인한 상태
   }
