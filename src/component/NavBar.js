@@ -46,6 +46,7 @@ export function NavBar() {
 
   return (
     <Flex>
+      {isAuthenticated() && <Box>{login.nickName} 님</Box>}
       <Button onClick={() => navigate("/")}>
         <FontAwesomeIcon icon={faHouse} />
         home
