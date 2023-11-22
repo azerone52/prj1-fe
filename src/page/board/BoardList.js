@@ -144,7 +144,7 @@ export function BoardList() {
   return (
     <Box>
       <Heading>게시물 목록</Heading>
-      <Box>
+      <Box mt={8}>
         <Table>
           <Thead>
             <Tr>
