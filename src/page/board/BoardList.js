@@ -3,6 +3,7 @@ import {
   Badge,
   Box,
   Button,
+  Center,
   Flex,
   Heading,
   Input,
@@ -51,27 +52,31 @@ function Pagination({ pageInfo }) {
     pageNumbers.push(i);
   }
   return (
-    <Box>
-      {pageInfo.prevPageNumber && (
-        <PageButton variant={"ghost"} pageNumber={pageInfo.prevPageNumber}>
-          <FontAwesomeIcon icon={faAngleLeft} />
-        </PageButton>
-      )}
-      {pageNumbers.map((pageNumber) => (
-        <PageButton
-          key={pageNumber}
-          variant={pageNumber == pageInfo.currentPageNumber ? "solid" : "ghost"}
-          pageNumber={pageNumber}
-        >
-          {pageNumber}
-        </PageButton>
-      ))}
-      {pageInfo.nextPageNumber && (
-        <PageButton variant={"ghost"} pageNumber={pageInfo.nextPageNumber}>
-          <FontAwesomeIcon icon={faAngleRight} />
-        </PageButton>
-      )}
-    </Box>
+    <Center mt={5} mb={40}>
+      <Box>
+        {pageInfo.prevPageNumber && (
+          <PageButton variant={"ghost"} pageNumber={pageInfo.prevPageNumber}>
+            <FontAwesomeIcon icon={faAngleLeft} />
+          </PageButton>
+        )}
+        {pageNumbers.map((pageNumber) => (
+          <PageButton
+            key={pageNumber}
+            variant={
+              pageNumber === pageInfo.currentPageNumber ? "solid" : "ghost"
+            }
+            pageNumber={pageNumber}
+          >
+            {pageNumber}
+          </PageButton>
+        ))}
+        {pageInfo.nextPageNumber && (
+          <PageButton variant={"ghost"} pageNumber={pageInfo.nextPageNumber}>
+            <FontAwesomeIcon icon={faAngleRight} />
+          </PageButton>
+        )}
+      </Box>
+    </Center>
   );
 }
 
@@ -149,7 +154,7 @@ export function BoardList() {
                 onClick={() => navigate("/board/" + board.id)}
               >
                 <Td>{board.id}</Td>
-                <Td>{board.countLike != 0 && board.countLike}</Td>
+                <Td>{board.countLike !== 0 && board.countLike}</Td>
                 <Td>
                   {board.title}
                   {board.countComment > 0 && (
