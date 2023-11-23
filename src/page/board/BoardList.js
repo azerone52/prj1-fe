@@ -26,7 +26,6 @@ import {
   faHeart,
   faSearch,
 } from "@fortawesome/free-solid-svg-icons";
-import * as PropTypes from "prop-types";
 import { faImage } from "@fortawesome/free-regular-svg-icons";
 
 function PageButton({ variant, pageNumber, children }) {
@@ -47,7 +46,6 @@ function PageButton({ variant, pageNumber, children }) {
 
 function Pagination({ pageInfo }) {
   const pageNumbers = [];
-  const navigate = useNavigate();
 
   for (let i = pageInfo.startPageNumber; i <= pageInfo.endPageNumber; i++) {
     pageNumbers.push(i);
@@ -171,13 +169,13 @@ export function BoardList() {
                 <Td>
                   {board.title}
                   {board.countComment > 0 && (
-                    <Badge>
+                    <Badge ml={2}>
                       <ChatIcon />
                       {board.countComment}
                     </Badge>
                   )}
                   {board.countFile > 0 && (
-                    <Badge>
+                    <Badge ml={2}>
                       <FontAwesomeIcon icon={faImage} />
                       {board.countFile}
                     </Badge>
